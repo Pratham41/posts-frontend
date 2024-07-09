@@ -1,25 +1,41 @@
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
+import Card from './components/Card';
+import Modal from './components/Modal';
 import './App.css';
 
-function App() {
+const App = () => {
+  const [cards, setCards] = useState([]);
+  const [modalInfo, setModalInfo] = useState(null);
+
+
+  useEffect(() => {
+    fetch('https://my-json-server.typicode.com/Codeinwp/front-end-internship-api/posts')
+      .then(response => response.json())
+      .then(data => setCards(data))
+      .catch(error => console.error('Error fetching data:', error));
+  }, []);
+
+  const handleCardClick = (card) => {
+    setModalInfo(card);
+  };
+
+  const closeModal = () => {
+    setModalInfo(null);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+    <div className="card-container">
+      {cards.map(card => (
+        <Card key={card.id} card={card} onClick={() => handleCardClick(card)} />
+      ))}
     </div>
+
+    {modalInfo && (
+      <Modal card={modalInfo} onClose={closeModal} />
+    )}
+  </div>
   );
-}
+};
 
 export default App;
